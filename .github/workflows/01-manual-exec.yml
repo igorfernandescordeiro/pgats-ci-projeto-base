@@ -1,53 +1,45 @@
----
-    name: Execução Manual
-    on:
-      workflow_dispatch: null
-    jobs:
-      e2e-tests:
-        runs-on:
-          - ubuntu-latest
-        steps:
-          - uses: actions/checkout@v4
-          - name: Instalando Yarn
-            run: npm install -g yarn
-          - name: Instalando dependências
-            run: yarn
-          - name: Instalando Playwright
-            run: yarn playwright install
-          - name: Testes E2E (end-to-end)
-            run: yarn run e2e
-          - uses: actions/upload-artifact@v4
-            with:
-              name: relatorio de testes
-              path: ./playwright-report
-    
+#CI Nível 01 - Disparo manual a partir de um click
 
-            
+#Nome que vai aparecer nas opções de pipe
+name: 'Execução Manual'
 
-#             # CI de Nìvel 01 - Disparo manual a partir de 1 clique
-# # nome que vai aparecer lá nas opções de pipe
-#  name: "Execução Manual"
-#  # regras de disparo da excucao (triggers)
-#   # gatilho de exec manual = workflow_dispatch
-#   on: 
-#    workflow_dispatch:
-#   jobs:
-#    # descricao do jovo
-#    e2e-tests:
-#      # maquina que o job vai executar
-#      runs-on: ['ubuntu-latest']  
-#      # passo a passo das acoes do job
-#      steps:
-#        - uses: actions/checkout@v4
-#      # - uses: actions/setup-node@v4
-#      #    with:
-#      #      node-version: lts/*
-#        - name: Instalando Yarn
-#          run: npm install -g yarn
-#        - name: Instalando dependências 
-#          run: yarn
-       
-#        - name: Instalando Playwright 
-#          run: yarn playwright install
-#        - name: Testes E2E (end-to-end)
-#          run: yarn run e2e
+#Triggers ou gatilhos de execução
+#gatilho de exec manual * workflow_dispacth
+
+on:
+  workflow_dispatch:
+
+jobs:
+  #descrição do jobs
+  e2e-testes:
+    #máquina que o job vai executar
+    runs-on: ['ubuntu-latest']
+
+    #passo a passo das ações do job
+    steps:
+      - uses: actions/checkout@v4
+      # - uses: actions/setup-node@v4
+      #   with:
+      #     node-version: lts/*  #lts/* = última versão estável
+
+      - name: Instalando Yarn
+        run: npm install -g yarn
+
+      - name: Instalando dependencies
+        run: yarn
+
+      - name: Instalando Playwright
+        run: yarn playwright install
+
+      - name: Testes E2E
+        run: yarn run e2e
+
+      - uses: actions/upload-artifact@v4
+        if: ${{ !cancelled() }} #expressão para passar se for diferente de cancelado
+        with:
+          name: tests_reports
+          path: ./playwright-report #caminho onde fica o relatório
+
+
+          #Expressão serve para independente de se acontecer algo ruim no passo anterior que
+          # o passo que tenha a expressão execute normalmente

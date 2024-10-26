@@ -1,0 +1,29 @@
+---
+    name: Execução por Deploy
+    on:
+      workflow_run:
+        workflows:
+          - Execução Manual
+        types:
+          - completed
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    jobs:
+      e2e-testes:
+        runs-on:
+          - ubuntu-latest
+        steps:
+          - uses: actions/checkout@v4
+          - name: Instalando Yarn
+            run: npm install -g yarn
+          - name: Instalando dependencies
+            run: yarn
+          - name: Instalando Playwright
+            run: yarn playwright install
+          - name: Testes E2E
+            run: yarn run e2e
+          - uses: actions/upload-artifact@v4
+            if: ${{ !cancelled() }}
+            with:
+              name: tests_reports
+              path: ./playwright-report
+    
