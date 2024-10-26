@@ -6,9 +6,10 @@
           - Execução Manual
         types:
           - completed
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    
     jobs:
       e2e-testes:
+        if: ${{ github.event.workflow_run.conclusion == 'success' }}
         runs-on:
           - ubuntu-latest
         steps:
